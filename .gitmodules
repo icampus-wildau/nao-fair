@@ -1,0 +1,6 @@
+[submodule "nao-fair-server"]
+	path = nao-fair-server
+	url = https://github.com/icampus-wildau/nao-fair-server.git
+[submodule "nao-fair-frontend"]
+	path = nao-fair-frontend
+	url = https://github.com/icampus-wildau/nao-fair-frontend.git

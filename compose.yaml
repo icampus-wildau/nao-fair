@@ -1,0 +1,19 @@
+services:
+  nao-fair:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    image: nao-fair:local
+    container_name: nao-fair
+    network_mode: host
+    user: "${HOST_UID:?set HOST_UID}:${HOST_GID:?set HOST_GID}"
+    init: true
+    volumes:
+      - ./nao-fair-server/data:/opt/nao-fair/nao-fair-server/data
+    environment:
+      NLTK_DATA: /opt/nao-fair/nao-fair-server/.venv/nltk_data
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GLADIA_API_KEY: ${GLADIA_API_KEY:-}
+      NAO_BRIDGE_TOKEN: ${NAO_BRIDGE_TOKEN:-}
