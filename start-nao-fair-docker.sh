@@ -4,7 +4,7 @@ set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$root"
 
-if [[ ! -f nao-fair-server/pyproject.toml || ! -f nao-fair-frontend/package-lock.json ]]; then
+if [[ ! -f nao-fair-server/pyproject.toml || ! -f nao-fair-frontend/pnpm-lock.yaml ]]; then
   echo 'Server or frontend checkout is missing. From this repository run: git submodule update --init' >&2
   exit 1
 fi

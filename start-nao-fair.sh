@@ -11,9 +11,9 @@ fi
 
 cd "$root/nao-fair-frontend"
 if [[ ! -d node_modules ]]; then
-  npm ci
+  pnpm install --frozen-lockfile
 fi
-npm run build
+pnpm run build
 
 export NLTK_DATA="$root/nao-fair-server/.venv/nltk_data"
 cd "$root/nao-fair-server"

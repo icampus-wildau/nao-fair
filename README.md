@@ -1,108 +1,90 @@
 # nao-fair
 
-The NAO Fair app is the operator application for one NAO robot at a university fair. This repository pins [nao-fair-server](https://github.com/icampus-wildau/nao-fair-server) and [nao-fair-frontend](https://github.com/icampus-wildau/nao-fair-frontend) and supplies the install and start commands.
+*Install and start the operator app for one NAO at a university fair.*
+
+![Python](https://img.shields.io/badge/python-3.12-blue?style=flat-square)
+![Node](https://img.shields.io/badge/node-20.19%20%7C%2022.12%2B-blue?style=flat-square)
+![License: Apache 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)
+
+This repository pins [nao-fair-server](https://github.com/icampus-wildau/nao-fair-server) and [nao-fair-frontend](https://github.com/icampus-wildau/nao-fair-frontend) and supplies the install and start commands.
+
+Use it to run the booth app, or to edit prompts, knowledge, and sensor mappings before a robot is connected. An API-only server setup stays in the [server README](https://github.com/icampus-wildau/nao-fair-server#setup).
 
 ## Requirements
 
-Linux x86-64. The robot libraries need Python 3.12, and the locked `qi` wheel has no Windows or Linux ARM build.
+Linux x86-64. The robot extra needs Python 3.12, and the locked `qi` wheel has no Windows or Linux ARM build.
 
-- Git
-- [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- Python 3.12
-- Node.js 20.19+ or 22.12+, with npm
-- Docker Engine with the Compose plugin, when using the production container
+- Git, [uv](https://docs.astral.sh/uv/getting-started/installation/), Python 3.12
+- Node.js 20.19+ or 22.12+, with [pnpm](https://pnpm.io/installation)
+- Docker Engine with the Compose plugin, only for the production container
 
 A robot and cloud keys are not required to edit configuration. For a real conversation, set the Gladia and OpenAI keys, reach the NAO on TCP 9559 or 9561 and 8765, and install the [robot microphone bridge](https://github.com/icampus-wildau/nao-websocket-bridge#install-from-a-laptop).
 
-## Clone
+## Install and start
 
 ```bash
 git clone --recurse-submodules https://github.com/icampus-wildau/nao-fair.git
 cd nao-fair
+git submodule update --init   # only if the clone omitted submodules
+./install.sh                  # server extras, NLTK data, frontend deps; does not build or start
+./start-nao-fair.sh           # builds the UI, serves http://127.0.0.1:8000
 ```
 
-If the clone was made without submodules:
+Ctrl+C stops the server. Restart after backend changes, and free port 8000 first.
+
+Development, with frontend reload at [http://127.0.0.1:5173](http://127.0.0.1:5173) and the API still on port 8000:
 
 ```bash
-git submodule update --init
+./start-nao-fair-dev.sh   # Ctrl+C stops both; backend changes still need a restart
 ```
-
-## Install
-
-```bash
-./install.sh
-```
-
-The script checks that `uv`, Python 3.12, and Node.js are on `PATH`. It then installs the server with the dev, browser, and robot extras, downloads the NLTK `punkt_tab` data, and installs the frontend dependencies. It does not build the frontend and does not start the app.
-
-An API-only setup of the server, without the robot extra, stays in the [server README](https://github.com/icampus-wildau/nao-fair-server#setup).
-
-## Start
-
-Production. The built app is served at [http://127.0.0.1:8000](http://127.0.0.1:8000):
-
-```bash
-./start-nao-fair.sh
-```
-
-Stop with Ctrl+C. The script builds the frontend, then starts the server. Restart it after backend changes, and stop any process already bound to port 8000 first.
-
-Development. Frontend hot reload is at [http://127.0.0.1:5173](http://127.0.0.1:5173), and the API stays at [http://127.0.0.1:8000](http://127.0.0.1:8000):
-
-```bash
-./start-nao-fair-dev.sh
-```
-
-Ctrl+C stops both processes. Frontend changes reload. Backend changes need a restart.
 
 OpenAI and Gladia keys are set in the app under **System → Schlüssel**, or with `OPENAI_API_KEY` and `GLADIA_API_KEY`. `NAO_BRIDGE_TOKEN` is the microphone-bridge path token.
 
-## Production with Docker
+## Production container
 
 ```bash
-./start-nao-fair-docker.sh
+./start-nao-fair-docker.sh   # linux/amd64, host network, foreground; Ctrl+C stops it
 ```
 
-The script builds a `linux/amd64` image when the build inputs changed, then runs it in the foreground on the host network. Open [http://127.0.0.1:8000](http://127.0.0.1:8000). Ctrl+C stops the container.
-
-The image contains the built frontend and the server with the robot and browser extras. `nao-fair-server/data` is bind-mounted, so the container and `./start-nao-fair.sh` share the database and operator secrets. The container runs as the current user.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The image contains the built frontend and the server with the robot and browser extras. `nao-fair-server/data` is bind-mounted, so the container and `./start-nao-fair.sh` share the database and operator secrets. The container runs as the current user.
 
 On Docker Desktop, use Linux containers and enable **Settings → Resources → Network → Enable host networking**.
 
 ## Windows
 
-Native Windows cannot install the robot extra. For the local scripts, use WSL 2, run the Linux commands above inside it, and open [http://127.0.0.1:8000](http://127.0.0.1:8000) in a Windows browser.
+Native Windows cannot install the robot extra. For the scripts above, use WSL 2 and open [http://127.0.0.1:8000](http://127.0.0.1:8000) in a Windows browser.
 
-To edit the server in a dev container, open `nao-fair-server` in VS Code or Cursor and choose **Dev Containers: Reopen in Container**. That container is the editor environment. It installs the server dependencies when it starts. The frontend still runs on the host: `./start-nao-fair-dev.sh` from this repository, or `npm run dev` in `nao-fair-frontend`. The dev container uses the host network, so the host dev server reaches the API on port 8000.
+To edit the server in a dev container, open `nao-fair-server` and choose **Dev Containers: Reopen in Container**. The frontend still runs on the host: `./start-nao-fair-dev.sh` from this repository, or `pnpm run dev` in `nao-fair-frontend`. The container uses the host network, so the host dev server reaches the API on port 8000.
 
-## Use without a robot
+## Without a robot
 
-Prompts, knowledge, pronunciation, vocabulary, sensor mappings, presets, and setups can be edited, saved, and applied while no robot is connected. Hardware actions stay unavailable. Editing does not need cloud access.
+Prompts, knowledge, pronunciation, vocabulary, sensor mappings, presets, and setups can be edited, saved, and applied while no robot is connected. Hardware actions stay unavailable.
 
-**System → Tests** runs the conversation with the browser microphone. Requirements are in the server README, [Test the conversation without a NAO](https://github.com/icampus-wildau/nao-fair-server#test-the-conversation-without-a-nao). With no robot connected, **Gespräch ohne NAO testen** on the dashboard opens that screen. The microphone starts only from **Mikrofontest starten**.
+**System → Tests** runs the conversation with the browser microphone. With no robot connected, **Gespräch ohne NAO testen** on the dashboard opens that screen. The microphone starts only from **Mikrofontest starten**. Requirements are in the server README, [Test the conversation without a NAO](https://github.com/icampus-wildau/nao-fair-server#test-the-conversation-without-a-nao).
 
 ## Checks
 
 From `nao-fair-frontend`:
 
 ```bash
-npm test
-npm run typecheck
-npm run test:e2e
+pnpm test
+pnpm run typecheck
+pnpm run test:e2e   # production client, API on 8001, preview on 4183; both ports must be free
 ```
 
-`npm run test:e2e` builds the production client and starts its own server on port 8001 and a preview on port 4183. Both ports must be free. The test server uses a temporary directory and does not read operator data. Browser choice and the Python path are described in the [frontend README](https://github.com/icampus-wildau/nao-fair-frontend).
+The test server uses a temporary directory and does not read operator data. Browser choice and the Python path are in the [frontend README](https://github.com/icampus-wildau/nao-fair-frontend).
 
-## Update a pinned checkout
+## Move a pinned checkout
 
-The server and frontend stay on the commits recorded here. To move the server forward:
+The server and frontend stay on the commits recorded here. Pulling this repository does not move either checkout to that day's `main`.
 
 ```bash
 git -C nao-fair-server fetch origin
 git -C nao-fair-server checkout origin/main
+# same two commands with nao-fair-frontend
 ```
 
-Use `nao-fair-frontend` for the other checkout. Review the pair, then commit the new submodule pointers in this repository. Pulling this repository does not move either checkout to whatever `main` is that day.
+Review the pair, then commit the new submodule pointers.
 
 ## Decisions
 

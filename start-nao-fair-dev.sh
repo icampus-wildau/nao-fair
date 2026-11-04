@@ -11,7 +11,7 @@ fi
 
 cd "$root/nao-fair-frontend"
 if [[ ! -d node_modules ]]; then
-  npm ci
+  pnpm install --frozen-lockfile
 fi
 
 backend_pid=""
@@ -50,6 +50,6 @@ echo '  API:                 http://127.0.0.1:8000'
 echo 'Stop with Ctrl+C.'
 
 cd "$root/nao-fair-frontend"
-npm run dev &
+pnpm run dev &
 frontend_pid=$!
 wait "$frontend_pid"

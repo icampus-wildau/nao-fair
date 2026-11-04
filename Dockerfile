@@ -1,10 +1,10 @@
 FROM node:22-bookworm-slim AS frontend
 
 WORKDIR /src/nao-fair-frontend
-COPY nao-fair-frontend/package.json nao-fair-frontend/package-lock.json ./
-RUN npm ci
+COPY nao-fair-frontend/package.json nao-fair-frontend/pnpm-lock.yaml ./
+RUN corepack enable && corepack install && pnpm install --frozen-lockfile
 COPY nao-fair-frontend/ ./
-RUN npm run build
+RUN pnpm run build
 
 FROM python:3.12-slim-bookworm AS runtime
 
