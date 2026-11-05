@@ -58,7 +58,7 @@ To edit the server in a dev container, open `nao-fair-server` and choose **Dev C
 
 ## Without a robot
 
-Prompts, knowledge, pronunciation, vocabulary, sensor mappings, presets, and setups can be edited, saved, and applied while no robot is connected. Hardware actions stay unavailable.
+Prompts, knowledge, pronunciation, vocabulary, sensor mappings, dialogs, and scenarios can be edited and saved while no robot is connected. Loading a scenario fills the draft; **Übernehmen** applies configuration. Hardware actions stay unavailable.
 
 **System → Tests** runs the conversation with the browser microphone. With no robot connected, **Gespräch ohne NAO testen** on the dashboard opens that screen. The microphone starts only from **Mikrofontest starten**. Requirements are in the server README, [Test the conversation without a NAO](https://github.com/icampus-wildau/nao-fair-server#test-the-conversation-without-a-nao).
 
@@ -87,6 +87,11 @@ git -C nao-fair-server checkout origin/main
 Review the pair, then commit the new submodule pointers.
 
 ## Decisions
+
+Domain language, runtime rules, and server decisions are in the server's
+[glossary](nao-fair-server/GLOSSARY.md), [behavior reference](nao-fair-server/docs/behavior.md),
+and [ADR index](nao-fair-server/docs/adr/README.md). The
+[frontend requirements](nao-fair-frontend/requirements.md) describe the current UI.
 
 - [Pin the server and frontend as submodules](docs/adr/0001-pin-server-and-frontend.md)
 - [Run production Docker on the host network](docs/adr/0002-production-docker-host-network.md)
